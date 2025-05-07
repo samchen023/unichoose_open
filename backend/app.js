@@ -1,17 +1,21 @@
+// backend/app.js
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
+const { sequelize } = require('./models');
+const courseRoutes = require('./routes/courseRoutes');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 基本路由
-app.get('/', (req, res) => {
-    res.send('選課系統 API 啟動成功');
-});
+app.use('/api', courseRoutes);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+
+sequelize.sync().then(() => {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}).catch((err) => {
+    console.error('Unable to connect to the database:', err);
 });
